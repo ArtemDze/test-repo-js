@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Support — Jestora Pattern Studio</title>
+  <meta name="description" content="Support and contact for Jestora Pattern Studio." />
+  <meta name="theme-color" content="#0c0d11" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/stage.css" />
+</head>
+<body>
+  <div class="stage-bg" aria-hidden="true"></div>
+  <div class="stage-grid" aria-hidden="true"></div>
+  <div class="orb orb-a" aria-hidden="true"></div>
+
+  <header class="site-nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">Jestora</span>
+      <span class="brand-sub">Pattern Studio</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="features.html">Features</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="support.html" aria-current="page">Support</a></li>
+      <li><a class="nav-cta" href="#contact">Contact</a></li>
+    </ul>
+  </header>
+
+  <main class="wrap">
+    <header class="page-hero reveal">
+      <p class="section-label">Support</p>
+      <h1>How can we help?</h1>
+      <p class="lede">
+        Quick answers for Studio, Labs, Library, and Premiere — plus a direct line if you need a person.
+      </p>
+    </header>
+
+    <section class="section" style="padding-top: 0;">
+      <div class="strip">
+        <article class="reveal">
+          <p class="section-label">Studio</p>
+          <h3>Controls &amp; Premiere</h3>
+          <p>Use the tool strip for Premiere, seed lock, compare, and notes. Programme text updates as you craft.</p>
+        </article>
+        <article class="reveal reveal-delay-1">
+          <p class="section-label">Labs</p>
+          <h3>Eye drills</h3>
+          <p>Pick A or B, read the reveal, then open the related practice stage. Progress stays on your device.</p>
+        </article>
+        <article class="reveal reveal-delay-2">
+          <p class="section-label">Library</p>
+          <h3>Saving work</h3>
+          <p>Pin starters, favorite compositions, and add notes. Clear Library anytime from Profile.</p>
+        </article>
+        <article class="reveal reveal-delay-3">
+          <p class="section-label">Access</p>
+          <h3>Motion &amp; VoiceOver</h3>
+          <p>Profile controls haptics and motion intensity. The App respects system Reduce Motion and Dynamic Type.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="prose reveal" id="faq">
+      <h2>FAQ</h2>
+      <h3>Where is my work stored?</h3>
+      <p>On your device, in Library. Deleting the App removes local App data from that device.</p>
+
+      <h3>Do I need an account?</h3>
+      <p>No. Jestora Pattern Studio does not require sign-in. We collect nothing from the App.</p>
+
+      <h3>How do I export?</h3>
+      <p>From Studio, use Export to create a still, then share through the iOS share sheet.</p>
+
+      <h3>Today’s cue keeps coming back</h3>
+      <p>Apply or dismiss the cue to mark it done for the day. You can reopen it from the Studio menu anytime.</p>
+
+      <h3>Privacy</h3>
+      <p>
+        We collect nothing — no accounts, no ads, no analytics SDK. Compositions stay on your device.
+        Read the full <a href="privacy.html">Privacy Policy</a> for App Store review.
+      </p>
+    </section>
+
+    <section class="reveal" id="contact" style="padding-bottom: 4rem;">
+      <p class="section-label">Contact</p>
+      <h2>Write to the house</h2>
+      <p class="lede">We read every message. Include your device model and iOS version when reporting a bug.</p>
+      <div class="contact-panel">
+        <p class="section-label">Developer</p>
+        <p style="font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--ivory); margin-bottom: 0.85rem;">Matthew Mendoza</p>
+        <p class="section-label">Email</p>
+        <a href="mailto:matthewmendoza627@gmail.com?subject=Jestora%20Pattern%20Studio%20Support">matthewmendoza627@gmail.com</a>
+      </div>
+      <div class="hero-actions" style="margin-top: 1.5rem;">
+        <a class="btn btn-primary" href="mailto:matthewmendoza627@gmail.com?subject=Jestora%20Pattern%20Studio%20Support">Send email</a>
+        <a class="btn btn-ghost" href="privacy.html">Privacy Policy</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">Jestora</span>
+        <span class="brand-sub">Pattern Studio</span>
+      </a>
+      <ul class="footer-links">
+        <li><a href="features.html">Features</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="support.html">Support</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="wrap footer-note">© <span id="y"></span> Jestora Pattern Studio.</div>
+  </footer>
+  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+  <script src="js/stage.js"></script>
+</body>
+</html>
