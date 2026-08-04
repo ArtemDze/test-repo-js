@@ -44,8 +44,21 @@ struct MainTabView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .overlay(alignment: .bottom) {
+        // Inset (not overlay) so ScrollViews / controls never sit under the floating bar —
+        // critical on iPad where overlay cropping fails App Review guideline 4.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             JSRStageTabBar(selection: tabBinding)
+                .padding(.top, 6)
+                .padding(.bottom, 10)
+                .background {
+                    LinearGradient(
+                        colors: [JSRColor.ink.opacity(0), JSRColor.ink.opacity(0.92), JSRColor.ink],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .ignoresSafeArea(edges: .bottom)
+                    .allowsHitTesting(false)
+                }
         }
         .preferredColorScheme(.dark)
         .background(JSRColor.ink.ignoresSafeArea())

@@ -92,7 +92,11 @@ struct StudioView: View {
                         stageCanvas
                             .padding(.horizontal, JSRSpace.md)
                             .frame(maxWidth: .infinity)
-                            .frame(minHeight: horizontalSizeClass == .regular ? 420 : 340)
+                            // Keep stage readable on iPad without crowding CONSTRAINT / tools under the tab bar.
+                            .frame(
+                                minHeight: horizontalSizeClass == .regular ? 360 : 340,
+                                maxHeight: horizontalSizeClass == .regular ? 480 : 400
+                            )
 
                         StudioToolStrip(
                             seedLocked: model.parameters.seedLocked,

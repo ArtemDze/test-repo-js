@@ -2,14 +2,13 @@ import CoreGraphics
 import SwiftUI
 
 enum JSRTabBarMetrics {
-    /// Space reserved for the floating tab bar + home indicator (explicit — do not rely on inset inheritance).
-    static let barClearance: CGFloat = 118
-    /// Extra air after the last item once the bar is cleared.
-    static let scrollTail: CGFloat = 28
+    /// Extra cushion under scroll content. Tab bar itself uses `safeAreaInset`, so this is
+    /// only breathing room — not the full bar height.
+    static let scrollTail: CGFloat = 36
     /// Use this on scroll content bottoms across main tabs.
-    static var scrollBottom: CGFloat { barClearance + scrollTail }
-    /// Studio needs more room for the inspector / system block.
-    static var studioScrollBottom: CGFloat { barClearance + 120 }
+    static var scrollBottom: CGFloat { scrollTail }
+    /// Studio inspector: a little more air after the last System block.
+    static var studioScrollBottom: CGFloat { scrollTail + 48 }
 }
 
 extension View {
