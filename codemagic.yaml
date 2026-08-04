@@ -4,7 +4,6 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      # Must match the App Store Connect API key name in Codemagic → Teams → Integrations
       app_store_connect: JestoraASC
     environment:
       ios_signing:
@@ -12,6 +11,7 @@ workflows:
         bundle_identifier: com.jestorapattern.studio
       vars:
         BUNDLE_ID: com.jestorapattern.studio
+        APP_STORE_APPLE_ID: "6797531429"
         XCODE_PROJECT: newFirstApp.xcodeproj
         XCODE_SCHEME: newFirstApp
       xcode: latest
@@ -20,13 +20,22 @@ workflows:
         script: xcode-project use-profiles
       - name: Increment build number
         script: |
+          set -e
           cd "$CM_BUILD_DIR"
-          LATEST="$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID" || true)"
-          if [[ -z "$LATEST" || "$LATEST" == "null" || "$LATEST" == *"error"* ]]; then
-            LATEST=0
-          fi
-          echo "Latest TestFlight build: $LATEST"
-          agvtool new-version -all "$((LATEST + 1))"
+          digits() { echo "$1" | tr -cd '0-9' | head -c 10; }
+          TF="$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID" 2>/dev/null || true)"
+          AS="$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || true)"
+          LOCAL="$(/usr/bin/grep -m1 'CURRENT_PROJECT_VERSION' "$XCODE_PROJECT/project.pbxproj" | tr -cd '0-9')"
+          TF="$(digits "${TF:-0}")"; TF="${TF:-0}"
+          AS="$(digits "${AS:-0}")"; AS="${AS:-0}"
+          LOCAL="$(digits "${LOCAL:-0}")"; LOCAL="${LOCAL:-0}"
+          LATEST="$TF"
+          for n in "$AS" "$LOCAL"; do
+            if [ "$n" -gt "$LATEST" ]; then LATEST="$n"; fi
+          done
+          NEW=$((LATEST + 1))
+          echo "Build numbers — TestFlight:$TF AppStore:$AS Local:$LOCAL → using $NEW"
+          agvtool new-version -all "$NEW"
       - name: Build IPA
         script: |
           xcode-project build-ipa \
@@ -45,6 +54,6 @@ workflows:
           failure: true
       app_store_connect:
         auth: integration
-        # Upload to ASC + submit to TestFlight (not full App Store review)
-        submit_to_testflight: true
+        # Upload only — avoids external beta-review metadata failures; use Internal Testing in ASC.
+        submit_to_testflight: false
         submit_to_app_store: false
