@@ -5,7 +5,7 @@ struct OnboardingFlowView: View {
     let onFinished: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var haptics: HapticsClient
 
     @State private var page: OnboardingPage = .prologue
     @State private var demo = MotifCatalog.all[0].parameters
@@ -50,7 +50,7 @@ struct OnboardingFlowView: View {
         // Same dark stage language as launch — not the light app chrome.
         .preferredColorScheme(.dark)
         .onAppear { configure(for: .prologue, animateScene: true) }
-        .onChange(of: page) { _, newValue in
+        .onChange(of: page) { newValue in
             configure(for: newValue, animateScene: true)
         }
     }
@@ -419,5 +419,5 @@ private struct DiamondShape: InsettableShape {
 
 #Preview {
     OnboardingFlowView(onFinished: {})
-        .environment(HapticsClient())
+        .environmentObject(HapticsClient())
 }

@@ -1,12 +1,9 @@
 import SwiftUI
-import SwiftData
 
 struct CollectionView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(ProjectStore.self) private var store
-    @Environment(HapticsClient.self) private var haptics
-    @Query(sort: \StudioProject.updatedAt, order: .reverse) private var projects: [StudioProject]
+    @EnvironmentObject private var store: ProjectStore
+    @EnvironmentObject private var haptics: HapticsClient
 
     @State private var search = ""
     @State private var sort: CollectionSort = .updated
@@ -20,6 +17,8 @@ struct CollectionView: View {
     @State private var toastTask: Task<Void, Never>?
     @State private var celebratingID: UUID?
     @State private var shelfPulse = false
+
+    private var projects: [StudioProject] { store.projects }
 
     private enum LayoutMode { case grid, list }
 
@@ -145,7 +144,7 @@ struct CollectionView: View {
             )) {
                 Button("Delete", role: .destructive) {
                     if let pendingDelete {
-                        store.delete(pendingDelete, context: modelContext)
+                        store.delete(pendingDelete)
                         showToast("Removed from Library")
                         haptics.warning()
                     }
@@ -165,7 +164,7 @@ struct CollectionView: View {
                         renameTarget.title = renameText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                             ? "Untitled Composition"
                             : renameText
-                        store.save(renameTarget, context: modelContext)
+                        store.save(renameTarget)
                         showToast("Renamed")
                         haptics.select()
                     }
@@ -283,7 +282,7 @@ struct CollectionView: View {
 
             Button {
                 let project = makeProject(from: dailyPrompt)
-                store.save(project, context: modelContext)
+                store.save(project)
                 showToast("Cue pinned to Library")
                 haptics.success()
                 path.append(project.id)
@@ -592,7 +591,7 @@ struct CollectionView: View {
             renameTarget = project
         }
         Button("Duplicate", systemImage: "plus.square.on.square") {
-            let copy = store.duplicate(project, context: modelContext)
+            let copy = store.duplicate(project)
             showToast("Duplicated")
             haptics.success()
             path.append(copy.id)
@@ -604,7 +603,7 @@ struct CollectionView: View {
 
     private func toggleFavorite(_ project: StudioProject) {
         project.isFavorite.toggle()
-        store.save(project, context: modelContext)
+        store.save(project)
         celebrate(project.id)
         showToast(project.isFavorite ? "Favorited" : "Removed favorite")
         haptics.select()
@@ -612,7 +611,7 @@ struct CollectionView: View {
 
     private func pinMotif(_ motif: MotifPreset) {
         let project = makeProject(from: motif)
-        store.save(project, context: modelContext)
+        store.save(project)
         celebrateShelf()
         celebrate(project.id)
         showToast("Pinned \(motif.title)")
@@ -624,7 +623,7 @@ struct CollectionView: View {
         var lastID: UUID?
         for motif in picks {
             let project = makeProject(from: motif)
-            store.save(project, context: modelContext)
+            store.save(project)
             lastID = project.id
         }
         celebrateShelf()
@@ -981,11 +980,10 @@ enum CollectionRoute: Hashable {
 // MARK: - Detail
 
 struct ProjectDetailView: View {
-    @Bindable var project: StudioProject
-    @Environment(\.modelContext) private var modelContext
+    var project: StudioProject
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(ProjectStore.self) private var store
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var store: ProjectStore
+    @EnvironmentObject private var haptics: HapticsClient
 
     @State private var notesDraft: String = ""
     @State private var toast: String?
@@ -1041,7 +1039,7 @@ struct ProjectDetailView: View {
                     HStack(spacing: 10) {
                         Button {
                             project.isFavorite.toggle()
-                            store.save(project, context: modelContext)
+                            store.save(project)
                             showToast(project.isFavorite ? "Favorited" : "Removed favorite")
                             haptics.select()
                             pulseCelebrate()
@@ -1055,7 +1053,7 @@ struct ProjectDetailView: View {
                         .buttonStyle(StageLiftButtonStyle(reduceMotion: reduceMotion))
 
                         Button {
-                            let copy = store.duplicate(project, context: modelContext)
+                            let copy = store.duplicate(project)
                             showToast("Duplicated")
                             haptics.success()
                             _ = copy
@@ -1088,7 +1086,7 @@ struct ProjectDetailView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     project.isFavorite.toggle()
-                    store.save(project, context: modelContext)
+                    store.save(project)
                     pulseCelebrate()
                     haptics.select()
                 } label: {
@@ -1168,9 +1166,9 @@ struct ProjectDetailView: View {
             .font(JSRType.body)
             .foregroundStyle(JSRStage.label)
             .lineLimit(3...6)
-            .onChange(of: notesDraft) { _, newValue in
+            .onChange(of: notesDraft) { newValue in
                 project.notes = newValue
-                store.save(project, context: modelContext)
+                store.save(project)
             }
         }
         .padding(JSRSpace.md)
@@ -1235,7 +1233,6 @@ struct ProjectDetailView: View {
 
 #Preview("Empty Library") {
     CollectionView()
-        .environment(ProjectStore())
-        .environment(HapticsClient())
-        .modelContainer(for: [StudioProject.self, AppSettings.self], inMemory: true)
-}
+        .environmentObject(ProjectStore())
+        .environmentObject(HapticsClient())
+        }

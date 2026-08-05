@@ -1,9 +1,7 @@
 import Foundation
-import SwiftData
 import UIKit
 
-@Model
-final class StudioProject {
+final class StudioProject: Codable, Identifiable, Hashable {
     var id: UUID
     var title: String
     var createdAt: Date
@@ -17,8 +15,8 @@ final class StudioProject {
     init(
         id: UUID = UUID(),
         title: String = "Untitled Composition",
-        createdAt: Date = .now,
-        updatedAt: Date = .now,
+        createdAt: Date = Date(),
+        updatedAt: Date = Date(),
         isFavorite: Bool = false,
         parameters: PatternParameters = .default,
         thumbnailData: Data? = nil,
@@ -40,7 +38,7 @@ final class StudioProject {
         get { (try? JSONDecoder().decode(PatternParameters.self, from: parametersData)) ?? .default }
         set {
             parametersData = (try? JSONEncoder().encode(newValue)) ?? parametersData
-            updatedAt = .now
+            updatedAt = Date()
         }
     }
 
@@ -58,10 +56,17 @@ final class StudioProject {
             promptID: promptID
         )
     }
+
+    static func == (lhs: StudioProject, rhs: StudioProject) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
-@Model
-final class AppSettings {
+final class AppSettings: Codable {
     var hasCompletedOnboarding: Bool
     var hasSeenLaunch: Bool
     var appearanceRaw: String

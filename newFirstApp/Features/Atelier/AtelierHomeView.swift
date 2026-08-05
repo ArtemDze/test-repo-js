@@ -7,7 +7,7 @@ struct AtelierHomeView: View {
     var onOpenInStudio: (MotifPreset) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var haptics: HapticsClient
 
     private let columns = [GridItem(.adaptive(minimum: 160), spacing: 14)]
 
@@ -129,5 +129,5 @@ struct AtelierHomeView: View {
 
 #Preview {
     AtelierHomeView(stageMotifID: MotifCatalog.all[0].id, onOpenInStudio: { _ in })
-        .environment(HapticsClient())
+        .environmentObject(HapticsClient())
 }

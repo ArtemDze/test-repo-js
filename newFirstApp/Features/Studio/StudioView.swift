@@ -1,16 +1,12 @@
 import SwiftUI
-import SwiftData
 
 struct StudioView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(HapticsClient.self) private var haptics
-    @Environment(ProjectStore.self) private var store
-    @Query private var settingsList: [AppSettings]
-    @Query private var projects: [StudioProject]
+    @EnvironmentObject private var haptics: HapticsClient
+    @EnvironmentObject private var store: ProjectStore
 
-    @State private var model: StudioViewModel
+    @StateObject private var model: StudioViewModel
     @State private var showExport = false
     @State private var exportRatio: CanvasRatio = .square
     @State private var exportImage: UIImage?
@@ -30,12 +26,8 @@ struct StudioView: View {
     @Binding private var motifToApply: MotifPreset?
     @Binding private var stageMotifID: String?
 
-    private var settings: AppSettings {
-        if let s = settingsList.first { return s }
-        let created = AppSettings()
-        modelContext.insert(created)
-        return created
-    }
+    private var settings: AppSettings { store.settings }
+    private var projects: [StudioProject] { store.projects }
 
     init(
         project: StudioProject? = nil,
@@ -45,14 +37,14 @@ struct StudioView: View {
         _motifToApply = motifToApply
         _stageMotifID = stageMotifID
         if let project {
-            _model = State(initialValue: StudioViewModel(
+            _model = StateObject(wrappedValue: StudioViewModel(
                 parameters: project.parameters,
                 projectID: project.id,
                 title: project.title,
                 notes: project.notes
             ))
         } else {
-            _model = State(initialValue: StudioViewModel())
+            _model = StateObject(wrappedValue: StudioViewModel())
         }
     }
 
@@ -196,13 +188,13 @@ struct StudioView: View {
             consumePendingMotif()
             publishStageMotifID()
         }
-        .onChange(of: motifToApply) { _, _ in
+        .onChange(of: motifToApply) { _ in
             consumePendingMotif()
         }
-        .onChange(of: model.activeMotifID) { _, _ in
+        .onChange(of: model.activeMotifID) { _ in
             publishStageMotifID()
         }
-        .onChange(of: model.notes) { _, _ in
+        .onChange(of: model.notes) { _ in
             scheduleNotesAutosave()
         }
         .onDisappear {
@@ -231,7 +223,7 @@ struct StudioView: View {
         if settings.completedPromptDates.count > 60 {
             settings.completedPromptDates.removeFirst(settings.completedPromptDates.count - 60)
         }
-        try? modelContext.save()
+        store.persistSettings()
     }
 
     private func scheduleNotesAutosave() {
@@ -249,7 +241,7 @@ struct StudioView: View {
               existing.notes != model.notes
         else { return }
         existing.notes = model.notes
-        store.save(existing, context: modelContext)
+        store.save(existing)
     }
 
     private func consumePendingMotif() {
@@ -466,8 +458,7 @@ struct StudioView: View {
                             Text("\(model.parameters.seed)")
                                 .font(JSRType.caption.monospacedDigit())
                                 .foregroundStyle(JSRStage.label)
-                                .contentTransition(.numericText())
-                        }
+                                                        }
                         Spacer()
                         Image(systemName: model.parameters.seedLocked ? "lock.fill" : "lock.open")
                             .font(.caption.weight(.semibold))
@@ -790,7 +781,7 @@ struct StudioView: View {
                         .foregroundStyle(JSRColor.highlight)
                 }
             }
-            .onChange(of: exportRatio) { _, _ in prepareExport() }
+            .onChange(of: exportRatio) { _ in prepareExport() }
         }
         .presentationDetents([.medium, .large])
     }
@@ -860,8 +851,9 @@ struct StudioView: View {
             project.thumbnailData = ExportService.thumbnail(parameters: model.parameters)
             model.projectID = project.id
         }
-        store.save(project, context: modelContext)
+        store.save(project)
         settings.lastProjectID = project.id
+        store.persistSettings()
         withAnimation(JSRMotion.preferred(JSRMotion.echo, reduceMotion: reduceMotion)) {
             model.pulseStage()
         }
@@ -878,16 +870,22 @@ struct StudioView: View {
         let quality = settings.exportQuality
         let ratio = exportRatio
         DispatchQueue.main.async {
-            exportImage = ExportService.render(parameters: params, quality: quality, ratio: ratio)
+            let image = ExportService.render(parameters: params, quality: quality, ratio: ratio)
+            exportImage = image
             isExporting = false
-            if exportImage == nil { exportError = "Export failed. Try again." }
+            if let image {
+                ExportService.archiveRendered(image)
+            } else {
+                exportError = "Export failed. Try again."
+            }
         }
     }
 }
 
 #Preview {
-    NavigationStack { StudioView() }
-        .environment(HapticsClient())
-        .environment(ProjectStore())
-        .modelContainer(for: [StudioProject.self, AppSettings.self], inMemory: true)
+    NavigationStack {
+        StudioView()
+    }
+    .environmentObject(HapticsClient())
+    .environmentObject(ProjectStore())
 }

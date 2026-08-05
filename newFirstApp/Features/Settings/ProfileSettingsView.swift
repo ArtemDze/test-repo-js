@@ -1,28 +1,19 @@
 import SwiftUI
-import SwiftData
 
 struct ProfileSettingsView: View {
     /// Switches to the shared Studio tab root (same instance as the Studio tab).
     var onOpenStudio: (() -> Void)? = nil
-
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(ProjectStore.self) private var store
-    @Environment(HapticsClient.self) private var haptics
-    @Query private var settingsList: [AppSettings]
-    @Query private var projects: [StudioProject]
+    @EnvironmentObject private var store: ProjectStore
+    @EnvironmentObject private var haptics: HapticsClient
 
     @State private var showClearConfirm = false
     @State private var showOnboarding = false
     @State private var toast: String?
     @State private var toastTask: Task<Void, Never>?
 
-    private var settings: AppSettings {
-        if let s = settingsList.first { return s }
-        let created = AppSettings()
-        modelContext.insert(created)
-        return created
-    }
+    private var settings: AppSettings { store.settings }
+    private var projects: [StudioProject] { store.projects }
 
     private var appVersion: String {
         let short = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -90,7 +81,7 @@ struct ProfileSettingsView: View {
             }
             .alert("Clear Library?", isPresented: $showClearConfirm) {
                 Button("Clear Library", role: .destructive) {
-                    store.clearAll(projects: projects, context: modelContext)
+                    store.clearAll()
                     settings.lastProjectID = nil
                     settings.completedPromptDates = []
                     persist()
@@ -275,8 +266,7 @@ struct ProfileSettingsView: View {
                 Text("\(projects.count)")
                     .font(JSRFont.serif(size: 28, relativeTo: .title, weight: .semibold))
                     .foregroundStyle(JSRColor.highlight)
-                    .contentTransition(.numericText())
-            }
+                                }
             .accessibilityElement(children: .combine)
 
             Button {
@@ -351,7 +341,7 @@ struct ProfileSettingsView: View {
     // MARK: Helpers
 
     private func persist() {
-        try? modelContext.save()
+        store.persistSettings()
     }
 
     private func showToast(_ text: String) {
@@ -573,7 +563,6 @@ private struct ProfileHeaderOrnament: View {
 
 #Preview {
     ProfileSettingsView()
-        .environment(ProjectStore())
-        .environment(HapticsClient())
-        .modelContainer(for: [StudioProject.self, AppSettings.self], inMemory: true)
-}
+        .environmentObject(ProjectStore())
+        .environmentObject(HapticsClient())
+        }

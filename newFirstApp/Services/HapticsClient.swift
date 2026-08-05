@@ -1,9 +1,9 @@
+import Combine
 import SwiftUI
 import UIKit
 
-@Observable
-final class HapticsClient {
-    var isEnabled: Bool = true
+final class HapticsClient: ObservableObject {
+    @Published var isEnabled: Bool = true
 
     func select() {
         guard isEnabled else { return }

@@ -5,11 +5,16 @@ enum JSRFont {
     /// Theatrical display serif — Cormorant Garamond (OFL).
     static let serifName = "Cormorant Garamond"
 
+    private static var didRegisterBundledFonts = false
+
     static func registerBundledFonts() {
+        guard !didRegisterBundledFonts else { return }
+        didRegisterBundledFonts = true
         let names = ["CormorantGaramond", "CormorantGaramond-Italic"]
         for name in names {
             if let url = Bundle.main.url(forResource: name, withExtension: "ttf") {
-                CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+                var error: Unmanaged<CFError>?
+                CTFontManagerRegisterFontsForURL(url as CFURL, .process, &error)
             }
         }
     }

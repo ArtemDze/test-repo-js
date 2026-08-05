@@ -8,7 +8,7 @@ struct StudioPremiereView: View {
     let onClose: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var haptics: HapticsClient
 
     @State private var curtainOpen: CGFloat = 0
     @State private var canvasOpacity: CGFloat = 0
@@ -48,8 +48,8 @@ struct StudioPremiereView: View {
                         .opacity(cardOpacity)
                         .offset(y: cardOffset)
                 }
-                .safeAreaPadding(.horizontal)
-                .safeAreaPadding(.bottom)
+                .padding(.horizontal, max(geo.safeAreaInsets.leading, geo.safeAreaInsets.trailing))
+                .padding(.bottom, geo.safeAreaInsets.bottom)
 
                 // Curtains
                 HStack(spacing: 0) {
@@ -268,5 +268,5 @@ struct ProgrammeNotePanel: View {
         kinetic: .orbit,
         onClose: {}
     )
-    .environment(HapticsClient())
+    .environmentObject(HapticsClient())
 }

@@ -269,8 +269,7 @@ struct StudioSlider: View {
                 Text(valueLabel?(value) ?? String(format: "%.2f", value))
                     .font(JSRType.caption.monospacedDigit())
                     .foregroundStyle(JSRStage.label)
-                    .contentTransition(.numericText())
-            }
+                                }
             Slider(value: $value, in: range, step: step, onEditingChanged: { editing in
                 onEditingChanged?(editing)
             })

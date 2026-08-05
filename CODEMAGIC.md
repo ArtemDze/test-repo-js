@@ -10,6 +10,20 @@
 | Project | `newFirstApp.xcodeproj` |
 | Workflow | `ios-testflight` in `codemagic.yaml` |
 
+## Firebase / cue config (already in repo)
+
+| Field | Value |
+|-------|--------|
+| Firebase function | `JestoraPatternStudio` |
+| Firebase region | `europe-central2` |
+| App ID (gate) | `id6797531429` |
+| GoogleService-Info | `newFirstApp/GoogleService-Info.plist` |
+| Push entitlements | Debug → `development`, Release → `production` |
+| SPM | FirebaseCore · FirebaseFunctions · FirebaseMessaging |
+
+In **Apple Developer → Identifiers → com.jestorapattern.studio** enable **Push Notifications**.  
+In **Firebase Console** upload the APNs Auth Key (`.p8`) for this app.
+
 ## One-time setup in Codemagic UI
 
 ### 1. App Store Connect API key (integration name must match yaml)

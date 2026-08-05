@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 import SwiftUI
 
 enum StudioConstraint: String, CaseIterable, Identifiable, Sendable {
@@ -70,23 +70,21 @@ enum StudioCompareMode: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-@Observable
-final class StudioViewModel {
-    var parameters: PatternParameters
-    var projectID: UUID?
-    var title: String
-    var notes: String
-    var isFocusMode = false
-    var toast: String?
-    var kinetic: KineticStyle = .breathe
-    var activeMotifID: String?
-    var constraint: StudioConstraint = .free
-    var pinnedA: PatternParameters?
-    var compareMode: StudioCompareMode = .off
-    var showCue = true
-    var stagePulse = false
-    /// Bumps on discrete edits so the canvas always refreshes visibly.
-    var canvasTick: UInt = 0
+final class StudioViewModel: ObservableObject {
+    @Published var parameters: PatternParameters
+    @Published var projectID: UUID?
+    @Published var title: String
+    @Published var notes: String
+    @Published var isFocusMode = false
+    @Published var toast: String?
+    @Published var kinetic: KineticStyle = .breathe
+    @Published var activeMotifID: String?
+    @Published var constraint: StudioConstraint = .free
+    @Published var pinnedA: PatternParameters?
+    @Published var compareMode: StudioCompareMode = .off
+    @Published var showCue = true
+    @Published var stagePulse = false
+    @Published var canvasTick: UInt = 0
     var canUndo: Bool { !undoStack.isEmpty }
     var canRedo: Bool { !redoStack.isEmpty }
     var hasPinnedA: Bool { pinnedA != nil }

@@ -1,12 +1,11 @@
 import SwiftUI
-import SwiftData
 
 // MARK: - Labs home
 
 struct ExperimentsHomeView: View {
     @State private var path = NavigationPath()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var haptics: HapticsClient
     @AppStorage(LabProgress.drillsStorageKey) private var clearedRaw = ""
 
     private var tonight: LabDrill { LabCatalog.tonightDrill }
@@ -148,8 +147,7 @@ struct ExperimentsHomeView: View {
                 Text("\(clearedCount) of \(drillTotal)")
                     .font(JSRFont.serif(size: 22, relativeTo: .title3, weight: .semibold))
                     .foregroundStyle(JSRStage.label)
-                    .contentTransition(.numericText())
-            }
+                                }
             Spacer()
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
@@ -490,12 +488,10 @@ enum ExperimentKind: String, CaseIterable, Identifiable, Hashable {
 
 struct ExperimentDetailView: View {
     let kind: ExperimentKind
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(ProjectStore.self) private var store
-    @Environment(HapticsClient.self) private var haptics
-    @Query private var settingsList: [AppSettings]
-
+    @EnvironmentObject private var store: ProjectStore
+    @EnvironmentObject private var haptics: HapticsClient
+    
     @State private var params = PatternParameters.default
     @State private var hue: Double = 0.08
     @State private var paletteKind: PaletteKind = .analogous
@@ -504,7 +500,7 @@ struct ExperimentDetailView: View {
     @State private var controlsRevealed = false
     @State private var toastTask: Task<Void, Never>?
 
-    private var settings: AppSettings? { settingsList.first }
+    private var settings: AppSettings { store.settings }
 
     private var kineticForKind: KineticStyle {
         reduceMotion ? .none : kind.kinetic
@@ -776,7 +772,7 @@ struct ExperimentDetailView: View {
 
     private func reset() {
         params = .default
-        params.canvasRatio = settings?.defaultRatio ?? .square
+        params.canvasRatio = settings.defaultRatio
         switch kind {
         case .symmetryChamber:
             params = MotifCatalog.all.first(where: { $0.id == "crown" })?.parameters ?? .default
@@ -815,8 +811,9 @@ struct ExperimentDetailView: View {
         p.clamp()
         let project = StudioProject(title: kind.title, parameters: p)
         project.thumbnailData = ExportService.thumbnail(parameters: p)
-        store.save(project, context: modelContext)
-        settingsList.first?.lastProjectID = project.id
+        store.save(project)
+        store.settings.lastProjectID = project.id
+        store.persistSettings()
         if store.persistenceError != nil {
             showToast(store.persistenceError ?? "Could not save")
             haptics.warning()
@@ -982,16 +979,14 @@ private extension ExperimentKind {
 
 #Preview("Labs Home") {
     ExperimentsHomeView()
-        .environment(ProjectStore())
-        .environment(HapticsClient())
-        .modelContainer(for: [StudioProject.self, AppSettings.self], inMemory: true)
-}
+        .environmentObject(ProjectStore())
+        .environmentObject(HapticsClient())
+        }
 
 #Preview("Lab Detail") {
     NavigationStack {
         ExperimentDetailView(kind: .symmetryChamber)
     }
-    .environment(ProjectStore())
-    .environment(HapticsClient())
-    .modelContainer(for: [StudioProject.self, AppSettings.self], inMemory: true)
-}
+    .environmentObject(ProjectStore())
+    .environmentObject(HapticsClient())
+    }

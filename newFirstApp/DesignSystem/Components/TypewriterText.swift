@@ -42,8 +42,8 @@ struct TypewriterText: View {
             .accessibilityLabel(fullText)
             .onAppear { startIfNeeded() }
             .onDisappear { task?.cancel() }
-            .onChange(of: fullText) { _, _ in resetAndStart() }
-            .onChange(of: isActive) { _, active in
+            .onChange(of: fullText) { _ in resetAndStart() }
+            .onChange(of: isActive) { active in
                 if active { startIfNeeded() }
             }
     }

@@ -1,8 +1,9 @@
 import SwiftUI
 
-/// Premium theatrical launch — geometric chaos resolves into the Jestora Pattern Studio emblem.
 struct LaunchAlignmentView: View {
     var isReturningUser: Bool = false
+    var holdAtEnd: Bool = false
+    var dismissSignal: Bool = false
     let onFinished: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -14,6 +15,10 @@ struct LaunchAlignmentView: View {
     @State private var ringPulse: CGFloat = 0
     @State private var curtainOpen: CGFloat = 0
     @State private var exitFade: CGFloat = 1
+    @State private var reachedHold = false
+    @State private var didFinish = false
+    /// Mirrored into `@State` so async choreography never reads a stale `dismissSignal` copy.
+    @State private var pendingDismiss = false
 
     private var totalDuration: TimeInterval {
         if reduceMotion { return 0.45 }
@@ -58,7 +63,15 @@ struct LaunchAlignmentView: View {
         .opacity(exitFade)
         .background(JSRColor.ink.ignoresSafeArea())
         .ignoresSafeArea()
-        .onAppear { runChoreography() }
+        .onAppear {
+            if dismissSignal { pendingDismiss = true }
+            runChoreography()
+        }
+        .onChange(of: dismissSignal) { ready in
+            guard ready else { return }
+            pendingDismiss = true
+            if reachedHold { performExit() }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(AppBrand.fullName)
         .accessibilityAddTraits(.isHeader)
@@ -257,8 +270,6 @@ struct LaunchAlignmentView: View {
         }
     }
 
-    // MARK: Choreography
-
     private func runChoreography() {
         if reduceMotion {
             phase = 1
@@ -269,18 +280,11 @@ struct LaunchAlignmentView: View {
                 markScale = 1
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                withAnimation(.easeOut(duration: 0.22)) { exitFade = 0 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.24, execute: onFinished)
+                finishOrHold()
             }
             return
         }
 
-        // ~5s arc:
-        // 0.0–0.9  curtains + chaos
-        // 0.9–3.4  fragments converge
-        // 3.4–4.3  emblem locks + wordmark
-        // 4.3–5.0  hold with living drift
-        // 5.0–5.5  soft exit
         withAnimation(.easeOut(duration: 0.9)) {
             curtainOpen = 1
         }
@@ -306,14 +310,25 @@ struct LaunchAlignmentView: View {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + totalDuration) {
-            withAnimation(.easeInOut(duration: 0.45)) {
-                exitFade = 0
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.48, execute: onFinished)
+            finishOrHold()
         }
     }
 
-    // MARK: Helpers
+    private func finishOrHold() {
+        reachedHold = true
+        if holdAtEnd && !pendingDismiss { return }
+        performExit()
+    }
+
+    private func performExit() {
+        guard !didFinish else { return }
+        didFinish = true
+        withAnimation(.easeInOut(duration: reduceMotion ? 0.22 : 0.45)) {
+            exitFade = 0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.24 : 0.48), execute: onFinished)
+    }
+
 
     private func diamondPath(center: CGPoint, size: CGFloat, rotation: Double) -> Path {
         let pts = [

@@ -4,7 +4,7 @@ import SwiftUI
 struct JSRStageTabBar: View {
     @Binding var selection: AppTab
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var haptics: HapticsClient
     @Namespace private var selectionNS
 
     var body: some View {
@@ -38,7 +38,6 @@ struct JSRStageTabBar: View {
                     .font(.system(size: 16, weight: selected ? .semibold : .regular))
                     .foregroundStyle(selected ? JSRColor.highlight : JSRColor.ivory.opacity(0.40))
                     .frame(height: 22)
-                    .contentTransition(.symbolEffect(.replace.downUp.byLayer))
 
                 Text(tab.title)
                     .font(JSRFont.serif(size: 10, relativeTo: .caption2, weight: selected ? .semibold : .regular))
@@ -174,5 +173,5 @@ private struct TabPressStyle: ButtonStyle {
         JSRColor.ink.ignoresSafeArea()
         JSRStageTabBar(selection: .constant(.studio))
     }
-    .environment(HapticsClient())
+    .environmentObject(HapticsClient())
 }

@@ -5,7 +5,7 @@ struct LabFieldNotesView: View {
     let kind: ExperimentKind
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var haptics: HapticsClient
     @AppStorage private var noteMask: Int
 
     private var notes: LabFieldNotes { LabCatalog.fieldNotes(for: kind) }

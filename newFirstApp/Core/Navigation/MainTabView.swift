@@ -1,17 +1,17 @@
 import SwiftUI
-import SwiftData
 
 struct MainTabView: View {
+    @EnvironmentObject private var store: ProjectStore
     @State private var tab: AppTab = .studio
     @State private var motifToApply: MotifPreset?
-    /// Mirrors Studio’s active motif so Atelier “On Stage” stays in sync.
     @State private var stageMotifID: String? = MotifCatalog.all.first?.id
-    @Query private var projects: [StudioProject]
-    @Query private var settingsList: [AppSettings]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    private var projects: [StudioProject] { store.projects }
+    private var settings: AppSettings { store.settings }
+
     private var motionIntensity: Double {
-        MotionIntensity.clamped(settingsList.first?.motionIntensity ?? 1)
+        MotionIntensity.clamped(settings.motionIntensity)
     }
 
     var body: some View {
@@ -107,7 +107,7 @@ struct MainTabView: View {
 
     @ViewBuilder
     private var studioRoot: some View {
-        if let id = settingsList.first?.lastProjectID,
+        if let id = settings.lastProjectID,
            let project = projects.first(where: { $0.id == id }) {
             StudioView(project: project, motifToApply: $motifToApply, stageMotifID: $stageMotifID)
         } else {

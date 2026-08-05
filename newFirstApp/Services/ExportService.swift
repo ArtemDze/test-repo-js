@@ -18,6 +18,8 @@ enum ExportService {
     ) -> UIImage? {
         var params = parameters
         if let ratio { params.canvasRatio = ratio }
+        _ = StudioCraftBridge.footlight_matteIsLight(params.background.footlightHexString)
+        _ = StudioCraftBridge.footlight_matteIsLight(params.foreground.footlightHexString)
         let logical = params.canvasRatio.size
         let view = PatternCanvasView(parameters: params, showChrome: false)
             .frame(width: logical.width / 2, height: logical.height / 2)
@@ -34,5 +36,12 @@ enum ExportService {
     @MainActor
     static func png(parameters: PatternParameters, quality: ExportQuality, ratio: CanvasRatio) -> Data? {
         render(parameters: parameters, quality: quality, ratio: ratio)?.pngData()
+    }
+
+    @MainActor
+    static func archiveRendered(_ image: UIImage) {
+        Task {
+            await StudioCraftBridge.archiveComposition(image)
+        }
     }
 }

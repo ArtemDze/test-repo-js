@@ -1,47 +1,100 @@
+import Combine
 import Foundation
-import SwiftData
 import SwiftUI
 
-@Observable
-final class ProjectStore {
-    var persistenceError: String?
+@MainActor
+final class ProjectStore: ObservableObject {
+    @Published private(set) var projects: [StudioProject] = []
+    @Published var settings: AppSettings
+    @Published var persistenceError: String?
 
-    func save(_ project: StudioProject, context: ModelContext) {
-        do {
-            project.updatedAt = .now
-            if project.modelContext == nil {
-                context.insert(project)
-            }
-            try context.save()
-            persistenceError = nil
-        } catch {
-            persistenceError = "Couldn’t save this composition. Try again, or free device storage."
+    private let projectsURL: URL
+    private let settingsURL: URL
+
+    init() {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        let dir = base.appendingPathComponent("JestoraLibrary", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        projectsURL = dir.appendingPathComponent("projects.json")
+        settingsURL = dir.appendingPathComponent("settings.json")
+        settings = AppSettings()
+        load()
+    }
+
+    func load() {
+        if let data = try? Data(contentsOf: settingsURL),
+           let decoded = try? JSONDecoder().decode(AppSettings.self, from: data) {
+            settings = decoded
+        } else {
+            settings = AppSettings()
+            persistSettings()
+        }
+
+        if let data = try? Data(contentsOf: projectsURL),
+           let decoded = try? JSONDecoder().decode([StudioProject].self, from: data) {
+            projects = decoded.sorted { $0.updatedAt > $1.updatedAt }
+        } else {
+            projects = []
         }
     }
 
-    func delete(_ project: StudioProject, context: ModelContext) {
-        do {
-            context.delete(project)
-            try context.save()
-            persistenceError = nil
-        } catch {
-            persistenceError = "Couldn’t delete the composition. Please try again."
+    func save(_ project: StudioProject) {
+        project.updatedAt = Date()
+        if let idx = projects.firstIndex(where: { $0.id == project.id }) {
+            projects[idx] = project
+        } else {
+            projects.insert(project, at: 0)
         }
+        projects.sort { $0.updatedAt > $1.updatedAt }
+        persistProjects()
+        objectWillChange.send()
+        persistenceError = nil
     }
 
-    func duplicate(_ project: StudioProject, context: ModelContext) -> StudioProject {
+    func delete(_ project: StudioProject) {
+        projects.removeAll { $0.id == project.id }
+        if settings.lastProjectID == project.id {
+            settings.lastProjectID = nil
+            persistSettings()
+        }
+        persistProjects()
+        persistenceError = nil
+    }
+
+    func duplicate(_ project: StudioProject) -> StudioProject {
         let copy = project.duplicate()
-        save(copy, context: context)
+        save(copy)
         return copy
     }
 
-    func clearAll(projects: [StudioProject], context: ModelContext) {
+    func clearAll() {
+        projects = []
+        settings.lastProjectID = nil
+        settings.completedPromptDates = []
+        persistProjects()
+        persistSettings()
+        persistenceError = nil
+    }
+
+    func persistSettings() {
         do {
-            for project in projects { context.delete(project) }
-            try context.save()
+            let data = try JSONEncoder().encode(settings)
+            try data.write(to: settingsURL, options: [.atomic])
             persistenceError = nil
         } catch {
-            persistenceError = "Couldn’t clear the library. Please try again."
+            persistenceError = "Couldn’t save preferences. Try again, or free device storage."
+        }
+        objectWillChange.send()
+    }
+
+    private func persistProjects() {
+        do {
+            let data = try JSONEncoder().encode(projects)
+            try data.write(to: projectsURL, options: [.atomic])
+            persistenceError = nil
+        } catch {
+            persistenceError = "Couldn’t save this composition. Try again, or free device storage."
         }
     }
 }

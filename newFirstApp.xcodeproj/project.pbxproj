@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C1F1BA5E0000000100000001 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = C1F1BA5E0000000100000003 /* FirebaseFunctions */; };
+		C1F1BA5E0000000100000002 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C1F1BA5E0000000100000004 /* FirebaseMessaging */; };
+		C1F1BA5E0000000100000006 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = C1F1BA5E0000000100000007 /* FirebaseCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		B7A11E010001000100010001 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1F1BA5E0000000100000006 /* FirebaseCore in Frameworks */,
+				C1F1BA5E0000000100000001 /* FirebaseFunctions in Frameworks */,
+				C1F1BA5E0000000100000002 /* FirebaseMessaging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +112,9 @@
 			);
 			name = newFirstApp;
 			packageProductDependencies = (
+				C1F1BA5E0000000100000007 /* FirebaseCore */,
+				C1F1BA5E0000000100000003 /* FirebaseFunctions */,
+				C1F1BA5E0000000100000004 /* FirebaseMessaging */,
 			);
 			productName = newFirstApp;
 			productReference = AC6CF0A1301B5FBB00C4041C /* newFirstApp.app */;
@@ -159,6 +171,9 @@
 			);
 			mainGroup = AC6CF098301B5FBB00C4041C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C1F1BA5E0000000100000005 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AC6CF0A2301B5FBB00C4041C /* Products */;
 			projectDirPath = "";
@@ -265,7 +280,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -322,7 +337,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -335,12 +350,17 @@
 		AC6CF0AD301B5FBC00C4041C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_ID = id6797531429;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = newFirstApp/newFirstAppDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_TEST_URL = "https://tds.openapp.app/admin/test/1";
 				DEVELOPMENT_TEAM = 78C629N23T;
 				ENABLE_PREVIEWS = YES;
+				FIREBASE_FUNCTION = JestoraPatternStudio;
+				FIREBASE_REGION = "europe-central2";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = newFirstApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Jestora Pattern Studio";
@@ -350,7 +370,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -375,12 +395,17 @@
 		AC6CF0AE301B5FBC00C4041C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_ID = id6797531429;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = newFirstApp/newFirstAppRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_TEST_URL = "https://tds.openapp.app/admin/test/1";
 				DEVELOPMENT_TEAM = 78C629N23T;
 				ENABLE_PREVIEWS = YES;
+				FIREBASE_FUNCTION = JestoraPatternStudio;
+				FIREBASE_REGION = "europe-central2";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = newFirstApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Jestora Pattern Studio";
@@ -390,7 +415,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -420,7 +445,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 78C629N23T;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jestorapattern.studio.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -441,7 +466,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 78C629N23T;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jestorapattern.studio.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -485,6 +510,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C1F1BA5E0000000100000005 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C1F1BA5E0000000100000003 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1F1BA5E0000000100000005 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		C1F1BA5E0000000100000004 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1F1BA5E0000000100000005 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		C1F1BA5E0000000100000007 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1F1BA5E0000000100000005 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AC6CF099301B5FBB00C4041C /* Project object */;
 }

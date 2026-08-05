@@ -2,10 +2,57 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>APP_ID</key>
+	<string>$(APP_ID)</string>
+	<key>FIREBASE_FUNCTION</key>
+	<string>$(FIREBASE_FUNCTION)</string>
+	<key>FIREBASE_REGION</key>
+	<string>$(FIREBASE_REGION)</string>
+	<key>DEBUG_TEST_URL</key>
+	<string>$(DEBUG_TEST_URL)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tg</string>
+		<string>viber</string>
+		<string>whatsapp</string>
+		<string>googlechrome</string>
+		<string>googlechromes</string>
+		<string>com-apple-mobilesafari-tab</string>
+		<string>mailto</string>
+		<string>tel</string>
+		<string>sms</string>
+		<string>facetime</string>
+		<string>itms-apps</string>
+		<string>itms-appss</string>
+		<string>instagram</string>
+		<string>fb</string>
+		<string>twitter</string>
+		<string>spotify</string>
+		<string>youtube</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Used to capture reference photos for compositions you create in the app.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Used to record short audio notes for your composition studies.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to save exported compositions to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to select reference photos for compositions you create in the app.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>CormorantGaramond.ttf</string>
 		<string>CormorantGaramond-Italic.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>

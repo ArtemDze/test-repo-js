@@ -6,7 +6,7 @@ struct LabDrillView: View {
     var onOpenPractice: ((ExperimentKind) -> Void)? = nil
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(HapticsClient.self) private var haptics
+    @EnvironmentObject private var haptics: HapticsClient
     @AppStorage(LabProgress.drillsStorageKey) private var clearedRaw = ""
 
     @State private var selection: LabChoice?
@@ -270,5 +270,5 @@ struct LabDrillView: View {
     NavigationStack {
         LabDrillView(drill: LabCatalog.drills[0])
     }
-    .environment(HapticsClient())
+    .environmentObject(HapticsClient())
 }
